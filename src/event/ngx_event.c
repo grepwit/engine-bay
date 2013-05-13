@@ -33,6 +33,9 @@ static char *ngx_event_debug_connection(ngx_conf_t *cf, ngx_command_t *cmd,
 
 static void *ngx_event_core_create_conf(ngx_cycle_t *cycle);
 static char *ngx_event_core_init_conf(ngx_cycle_t *cycle, void *conf);
+static ngx_int_t ngx_event_dummy_accept_filter(ngx_connection_t *c);
+
+ngx_int_t  (*ngx_event_top_accept_filter) (ngx_connection_t *c);
 
 
 static ngx_uint_t     ngx_timer_resolution;
@@ -991,6 +994,8 @@ ngx_events_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         }
     }
 
+    ngx_event_top_accept_filter = ngx_event_dummy_accept_filter;
+
     pcf = *cf;
     cf->ctx = ctx;
     cf->module_type = NGX_EVENT_MODULE;
@@ -1333,4 +1338,13 @@ ngx_event_core_init_conf(ngx_cycle_t *cycle, void *conf)
     ngx_conf_init_msec_value(ecf->accept_mutex_delay, 500);
 
     return NGX_CONF_OK;
+}
+
+
+static ngx_int_t
+ngx_event_dummy_accept_filter(ngx_connection_t *c)
+{
+    ngx_log_debug0(NGX_LOG_DEBUG_EVENT, c->log, 0, "event dummy accept filter");
+
+    return NGX_OK;
 }

@@ -11,12 +11,11 @@
 
 
 static ngx_int_t ngx_disable_accept_events(ngx_cycle_t *cycle, ngx_uint_t all);
-static void ngx_close_accepted_connection(ngx_connection_t *c);
-
 
 void
 ngx_event_accept(ngx_event_t *ev)
 {
+    ngx_int_t          rc;
     socklen_t          socklen;
     ngx_err_t          err;
     ngx_log_t         *log;
@@ -305,6 +304,23 @@ ngx_event_accept(ngx_event_t *ev)
         log->data = NULL;
         log->handler = NULL;
 
+        /* accept filter */
+
+        rc = ngx_event_top_accept_filter(c);
+
+        if (rc == NGX_ERROR) {
+            ngx_close_accepted_connection(c);
+            return;
+        }
+
+        if (rc == NGX_DECLINED) {
+            if (ngx_event_flags & NGX_USE_KQUEUE_EVENT) {
+                ev->available--;
+            }
+
+            continue;
+        }
+
         ls->handler(c);
 
         if (ngx_event_flags & NGX_USE_KQUEUE_EVENT) {
@@ -418,7 +434,7 @@ ngx_disable_accept_events(ngx_cycle_t *cycle, ngx_uint_t all)
 }
 
 
-static void
+void
 ngx_close_accepted_connection(ngx_connection_t *c)
 {
     ngx_socket_t  fd;
