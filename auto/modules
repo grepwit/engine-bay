@@ -1172,6 +1172,9 @@ if [ $STREAM != NO ]; then
     fi
 fi
 
+if [ $HTTP_UPSTREAM_RBTREE = YES ]; then
+    have=NGX_HTTP_UPSTREAM_RBTREE . auto/have
+fi
 
 #if [ -r $NGX_OBJS/auto ]; then
 #    . $NGX_OBJS/auto
