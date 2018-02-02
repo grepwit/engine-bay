@@ -894,7 +894,12 @@ ngx_event_process_init(ngx_cycle_t *cycle)
 
 #endif
 
-        if (ngx_use_accept_mutex) {
+        if (ngx_use_accept_mutex
+#if (NGX_HAVE_REUSEPORT)
+            && !ls[i].reuseport
+#endif
+           )
+        {
             continue;
         }
 
