@@ -6088,12 +6088,6 @@ ngx_http_upstream_add(ngx_conf_t *cf, ngx_url_t *u, ngx_uint_t flags)
             goto not_found;
         }
 
-        if (uscf->default_port && u->default_port
-            && uscf->default_port != u->default_port)
-        {
-            goto not_found;
-        }
-
         return uscf;
     }
 
