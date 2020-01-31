@@ -1347,7 +1347,7 @@ ngx_event_core_init_conf(ngx_cycle_t *cycle, void *conf)
 
     ngx_conf_init_value(ecf->multi_accept, 0);
     ngx_conf_init_value(ecf->accept_mutex, 0);
-    ngx_conf_init_msec_value(ecf->accept_mutex_delay, 500);
+    ngx_conf_init_msec_value(ecf->accept_mutex_delay, 100);
 
     return NGX_CONF_OK;
 }
